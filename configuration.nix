@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 
-let{
+let preferences = {
     defaultWebPage = "https://google.com";
     backgroundPath = "/run/current-system/sw/share/backgrounds/nixos-logo.png";
 }
@@ -11,6 +11,13 @@ in
     networking.firewall = {
     enable = false;
   };
+
+  nix.gc = {
+  automatic = true;
+  dates = "weekly";
+  options = "--delete-older-than 30d";
+};
+
 
 
   programs.firefox = {
@@ -154,7 +161,7 @@ in
       bindsym $mod+9 workspace number 9
       bindsym $mod+0 workspace number 10
 
-      exec_always swaybg -i backgroundPath -m fill
+      exec_always swaybg -i preferences.backgroundPath -m fill
 
       # (Optional) Borders & gaps
       # default_border pixel 2
@@ -165,7 +172,7 @@ in
 
   environment.shellInit = ''
   browser() {
-    local url="${1:-${defaultWebPage}}"
+    local url="${1:-${preferences.defaultWebPage}}"
     firefox --new-window --app="$url"
   }
 
