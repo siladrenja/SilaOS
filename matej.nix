@@ -10,14 +10,34 @@
     vscodium
     vlc
     stremio
-    alacritty 
     python3
-    iosevka
+    nerd-fonts.iosevka
    ];
   
   fonts.fontconfig.enable = true;
 
 #  programs.bash.enable = false;
+
+ programs.alacritty = {
+    enable = true;
+    settings = {
+      font = {
+        normal = {
+          family = "Iosevka";
+          style = "Regular";
+        };
+        bold = {
+          family = "Iosevka";
+          style = "Bold";
+        };
+        italic = {
+          family = "Iosevka";
+          style = "Italic";
+        };
+        size = 14.0;
+      };
+    };
+  };
 
 programs.starship = {
     enable = true;
@@ -69,8 +89,24 @@ programs.starship = {
         "${mod}+ctrl+Right" = "move right";
       };
     };
+
+  
 #    environment.loginShellInit = ''
  #   [[ "$(tty)" == /dev/tty1 ]] && sway
 #  '';
   };
+
+  xdg.configFile."lsd/config.yaml".text = ''
+    sorting:
+      column: name
+      order: ascending
+      dir-grouping: first
+    classic: false
+
+    blocks:
+      - permission
+      - size
+      - date
+      - name
+  '';
 }
