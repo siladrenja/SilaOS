@@ -23,23 +23,31 @@
     settings = {
       font = {
         normal = {
-          family = "Iosevka";
+          family = "Iosevka Nerd Font";
           style = "Regular";
         };
         bold = {
-          family = "Iosevka";
+          family = "Iosevka Nerd Font";
           style = "Bold";
         };
         italic = {
-          family = "Iosevka";
+          family = "Iosevka Nerd Font";
           style = "Italic";
         };
-        size = 14.0;
+        size = 11.0;
       };
     };
   };
 
-programs.starship = {
+  programs.fish = {
+    enable = true;
+    shellAliases = {
+      ls = "lsd";
+      sh = "swayhide";
+    };
+  };
+
+  programs.starship = {
     enable = true;
     settings = {
       add_newline = true;
@@ -70,7 +78,7 @@ programs.starship = {
         };
       };
       fonts = {
-        names = ["iosevka sans mono"];
+        names = ["Iosevka Nerd Font"];
       };
 
       terminal = "alacritty";
