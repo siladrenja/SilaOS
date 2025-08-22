@@ -49,11 +49,6 @@ programs.starship = {
           pointer_accel = "0.55";
         };
       };
-      bars = [
-      {
-        statusCommand = "waybar";
-      }
-      ];
       fonts = {
         names = ["iosevka sans mono"];
       };
