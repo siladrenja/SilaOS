@@ -46,8 +46,6 @@ in
 
   time.timeZone = "Europe/Zagreb";
 
-  programs.firefox.enable = true;
-
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
@@ -60,7 +58,10 @@ in
 
   services.openssh.enable = true;
 
-  services.displayManager.ly.enable= true;
+  services.displayManager.sddm = {
+    enable= true;
+    wayland.enable = true;
+  };
   
   system.stateVersion = "25.05"; # Did you read the comment?
   
