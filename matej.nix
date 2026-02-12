@@ -13,7 +13,7 @@
 {
   home.username = "matej";
   home.homeDirectory= "/home/matej";
-  home.stateVersion = "24.11";
+  home.stateVersion = "25.05";
 
   home.packages = with pkgs; [
     discord
@@ -22,6 +22,13 @@
     stremio
     python3
     nerd-fonts.iosevka
+    jetbrains.clion
+    gcc
+    cmake
+    spotify-player
+    mc
+    kdePackages.dolphin
+    lazygit
    ];
 
   programs = {
@@ -135,6 +142,18 @@
 
   services.gnome-keyring.enable = true;
 
+  programs.fuzzel = {
+    enable = true;
+
+    settings = {
+      main = {
+        font = "Iosevka Nerd Font:size=12";
+        terminal = "alacritty";
+        layer = "overlay"; 
+     };
+    };
+  };
+
   wayland.windowManager.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
@@ -166,9 +185,9 @@
         "${mod}+ctrl+Down" = "move down";
         "${mod}+ctrl+Up" = "move up";
         "${mod}+ctrl+Right" = "move right";
+        "${mod}+space" = "exec fuzzel";
       };
     };
-
   
 #    environment.loginShellInit = ''
  #   [[ "$(tty)" == /dev/tty1 ]] && sway
