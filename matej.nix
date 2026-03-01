@@ -177,6 +177,9 @@ wayland.windowManager.hyprland = {
         natural_scroll = true;
         tap-to-click = true;
       };
+       
+      follow_mouse = 0;
+      mouse_refocus = false;
     };
 
     ############################
@@ -202,8 +205,8 @@ wayland.windowManager.hyprland = {
     # ANIMATIONS (VALID SYNTAX)
     ############################
     animations = {
-  enabled = false;
-};
+      enabled = false;
+    };
 
 
 
@@ -264,6 +267,10 @@ wayland.windowManager.hyprland = {
   };
   exec-once = [ "waybar" ];
   };
+
+  
+
+
 };
 
 programs.waybar = {
@@ -347,6 +354,7 @@ home.sessionVariables = {
 
 programs.git = {
   enable = true;
+  package = pkgs.gitFull;
   extraConfig = {
     credential.helper = "libsecret";
   };
