@@ -15,6 +15,17 @@
   home.homeDirectory= "/home/matej";
   home.stateVersion = "25.05";
 
+  nixpkgs.overlays = [
+  (final: prev: {
+    git = prev.gitFull;
+    gitMinimal = prev.gitFull;
+    gitWithSvn = prev.gitFull;
+  })
+];
+
+
+
+
   home.packages = with pkgs; [
     discord
     vscodium
@@ -351,12 +362,5 @@ home.sessionVariables = {
 
   services.gnome-keyring.enable = true;
 
-programs.git = {
-  enable = true;
-  package = pkgs.gitFull;
-  extraConfig = {
-    credential.helper = "libsecret";
-  };
-};
 }
 

@@ -8,6 +8,7 @@ let
   };
 in
 {
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -70,14 +71,22 @@ boot.kernelPackages = pkgs.linuxPackages;
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
+    git
+    git-credential-manager
     lsd
     (pkgs.callPackage ./pkgs/swayhide.nix{})
     cage
     udiskie
     udisks2
     polkit_gnome
-    libsecret
   ];
+
+  programs.git = {
+    enable = true;
+    config = {
+      credential.helper = "manager";
+    };
+  };
 
 
    fonts = {
@@ -142,7 +151,7 @@ virtualisation.waydroid.enable = true;
 environment.variables = {GSK_RENDERER="ngl";};
 
 security.pam.services.greetd.enableGnomeKeyring = true;
-
+security.pam.services.login.enableGnomeKeyring = true;
 
 
   system.stateVersion = "25.05"; # Did you read the comment?
