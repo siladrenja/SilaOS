@@ -39,7 +39,6 @@
    ];
 
 
-
   programs = {
     firefox = {
       enable = true;

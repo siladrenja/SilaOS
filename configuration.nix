@@ -137,6 +137,8 @@ services.greetd.settings.environment = {
   XDG_CONFIG_DIRS = "/etc/xdg";
 };
 
+virtualisation.waydroid.enable = true;
+
 environment.variables = {GSK_RENDERER="ngl";};
 
 security.pam.services.greetd.enableGnomeKeyring = true;
