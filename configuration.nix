@@ -81,10 +81,13 @@ boot.kernelPackages = pkgs.linuxPackages;
     polkit_gnome
   ];
 
+  services.gnome.gnome-keyring.enable = true;
+
   programs.git = {
     enable = true;
     config = {
       credential.helper = "manager";
+      credential.credentialStore = "secretservice";
     };
   };
 
@@ -106,9 +109,6 @@ boot.kernelPackages = pkgs.linuxPackages;
     Restart = "always";
   };
 };
-
-
-  services.gnome.gnome-keyring.enable = true;
 
   services.openssh.enable = true;
 
