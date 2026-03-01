@@ -76,7 +76,28 @@ boot.kernelPackages = pkgs.linuxPackages;
     cage
     udiskie
     udisks2
+    polkit_gnome
   ];
+
+
+   fonts = {
+  enableDefaultFonts = true;
+  packages = with pkgs; [
+    nerd-fonts.iosevka
+    nerd-fonts.symbols-only
+  ];
+};
+
+
+  systemd.user.services.polkit-gnome-authentication-agent = {
+  description = "Polkit GNOME Authentication Agent";
+  wantedBy = [ "graphical-session.target" ];
+  serviceConfig = {
+    ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+    Restart = "always";
+  };
+};
+
 
   services.gnome.gnome-keyring.enable = true;
 

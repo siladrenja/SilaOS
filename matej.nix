@@ -21,15 +21,24 @@
     vlc
     stremio
     python3
-    nerd-fonts.iosevka
+    jetbrains.jdk
     jetbrains.clion
+    jetbrains.idea-community
+    jetbrains.rider
     gcc
     cmake
     spotify-player
     mc
     kdePackages.dolphin
     lazygit
+    peazip
+    unzip
+    #wineWow64Packages.stable
+    winetricks
+    wineWow64Packages.waylandFull
    ];
+
+
 
   programs = {
     firefox = {
@@ -121,7 +130,6 @@
     enable = true;
     shellAliases = {
       ls = "lsd";
-      sh = "swayhide";
     };
   };
 
@@ -140,8 +148,6 @@
     };
   };
 
-  services.gnome-keyring.enable = true;
-
   programs.fuzzel = {
     enable = true;
 
@@ -153,46 +159,175 @@
      };
     };
   };
+wayland.windowManager.hyprland = {
+  enable = true;
 
-  wayland.windowManager.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-    config = {
-      modifier = "Mod4";
-      input = {
-        "*" = {
-          xkb_layout = "hr";
-          tap = "enabled";
-          natural_scroll = "enabled";
-          pointer_accel = "0.55";
-        };
-      };
-      fonts = {
-        names = ["Iosevka Nerd Font"];
-      };
+  settings = {
+    "$mod" = "SUPER";
+    "$terminal" = "alacritty";
 
-      terminal = "alacritty";
+    ############################
+    # INPUT
+    ############################
+    input = {
+      kb_layout = "hr";
+      sensitivity = 0.55;
 
-    keybindings = 
-       let
-         mod = config.wayland.windowManager.sway.config.modifier;
-         cfg = config.wayland.windowManager.sway.config;
-      in lib.mkOptionDefault {
-        "${mod}+Return" = "exec ${cfg.terminal}";
-        "${mod}+delete" = "kill";
-        "${mod}+d" = "exec ${cfg.menu}";
-        "${mod}+ctrl+Left" = "move left";
-        "${mod}+ctrl+Down" = "move down";
-        "${mod}+ctrl+Up" = "move up";
-        "${mod}+ctrl+Right" = "move right";
-        "${mod}+space" = "exec fuzzel";
+      touchpad = {
+        natural_scroll = true;
+        tap-to-click = true;
       };
     };
-  
-#    environment.loginShellInit = ''
- #   [[ "$(tty)" == /dev/tty1 ]] && sway
-#  '';
+
+    ############################
+    # NO GAPS, THIN BORDER
+    ############################
+    general = {
+      gaps_in = 0;
+      gaps_out = 0;
+      border_size = 1;
+    };
+
+    ############################
+    # DECORATION (VALID OPTIONS)
+    ############################
+    decoration = {
+      rounding = 0;
+      blur = {
+        enabled = false;
+      };
+    };
+
+    ############################
+    # ANIMATIONS (VALID SYNTAX)
+    ############################
+    animations = {
+  enabled = false;
+};
+
+
+
+    ############################
+    # CURSOR FIX
+    ############################
+    cursor = {
+      no_hardware_cursors = false;
+    };
+
+    ############################
+    # KEYBINDINGS
+    ############################
+    bind = [
+      # basic
+      "$mod, Return, exec, $terminal"
+      "$mod, Delete, killactive"
+      "$mod, Space, exec, fuzzel"
+
+      # focus with arrows
+      "$mod, left, movefocus, l"
+      "$mod, right, movefocus, r"
+      "$mod, up, movefocus, u"
+      "$mod, down, movefocus, d"
+
+      # move windows with mod+ctrl
+      "$mod CTRL, left, movewindow, l"
+      "$mod CTRL, right, movewindow, r"
+      "$mod CTRL, up, movewindow, u"
+      "$mod CTRL, down, movewindow, d"
+
+      # workspaces 1–9
+      "$mod, 1, workspace, 1"
+      "$mod, 2, workspace, 2"
+      "$mod, 3, workspace, 3"
+      "$mod, 4, workspace, 4"
+      "$mod, 5, workspace, 5"
+      "$mod, 6, workspace, 6"
+      "$mod, 7, workspace, 7"
+      "$mod, 8, workspace, 8"
+      "$mod, 9, workspace, 9"
+
+      # move window to workspace
+      "$mod SHIFT, 1, movetoworkspace, 1"
+      "$mod SHIFT, 2, movetoworkspace, 2"
+      "$mod SHIFT, 3, movetoworkspace, 3"
+      "$mod SHIFT, 4, movetoworkspace, 4"
+      "$mod SHIFT, 5, movetoworkspace, 5"
+      "$mod SHIFT, 6, movetoworkspace, 6"
+      "$mod SHIFT, 7, movetoworkspace, 7"
+      "$mod SHIFT, 8, movetoworkspace, 8"
+      "$mod SHIFT, 9, movetoworkspace, 9"
+    ];
+  misc = {
+    enable_swallow = true;
+    swallow_regex = ".*";                # swallow everything
+    swallow_exception_regex = "";        # no exceptions
   };
+  exec-once = [ "waybar" ];
+  };
+};
+
+programs.waybar = {
+  enable = true;
+
+  settings = {
+  mainBar = {
+    layer = "top";
+    position = "top";
+
+    modules-left = [ "hyprland/workspaces" ];
+    modules-center = [ ];
+    modules-right = [ "battery" "clock" ];
+
+    "hyprland/workspaces" = {
+      format = "{name}";
+      on-click = "hyprctl dispatch workspace {name}";
+    };
+
+    battery = {
+  format = "{icon}{capacity}%";
+  format-charging = "⚡{capacity}%";
+  icons = [ "" "" "" "" "" ];
+};
+
+
+    clock = {
+      format = "{:%Y-%m-%d %H:%M}";
+      interval = 60;
+    };
+  };
+};
+
+
+  style = ''
+    * {
+      font-family: "Symbols Nerd Font", monospace;
+      font-size: 12px;
+      padding: 0 6px;
+    }
+
+    window#waybar {
+      background: rgba(0,0,0,0.7);
+      color: #ffffff;
+    }
+
+    #workspaces button {
+      padding: 0 4px;
+      color: #cccccc;
+    }
+
+    #workspaces button.active {
+      color: #ffffff;
+      border-bottom: 2px solid #33ccff;
+    }
+  '';
+};
+
+
+home.sessionVariables = {
+  XCURSOR_THEME = "Adwaita";
+  XCURSOR_SIZE = "24";
+};
+
 
   xdg.configFile."lsd/config.yaml".text = ''
     sorting:
@@ -207,4 +342,14 @@
       - date
       - name
   '';
+
+  services.gnome-keyring.enable = true;
+
+programs.git = {
+  enable = true;
+  extraConfig = {
+    credential.helper = "libsecret";
+  };
+};
 }
+
