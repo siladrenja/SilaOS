@@ -51,44 +51,43 @@
     nixosConfigurations = nixpkgs.lib.genAttrs hostNames mkHost;
 
     packages.${system}.iso = (nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = [
-        "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-        ({ config, pkgs, ... }: {
-          nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  inherit system;
+  modules = [
+    "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+    ({ config, pkgs, ... }: {
+      nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-          # Launch interactive installer on TTY1 upon boot
-          systemd.services.guided-installer = {
-            description = "Guided NixOS Host Installer";
-            wantedBy = [ "multi-user.target" ];
-            serviceConfig = {
-              Type = "idle";
-              StandardInput = "tty";
-              StandardOutput = "tty";
-              StandardError = "tty";
-              TTYPath = "/dev/tty1";
-              TTYReset = true;
-              TTYVHangup = true;
-              TTYVTDisallocate = true;
-            };
-            path = with pkgs; [ git nix util-linux bash coreutils disko gawk gnugrep ];
-            script = ''
-              clear
-              echo "==> Auto-mounting Ventoy storage drive..."
-              mkdir -p /mnt/usb
-              mount /dev/disk/by-label/Ventoy /mnt/usb 2>/dev/null || mount /dev/sda1 /mnt/usb 2>/dev/null
+      # Log in as root automatically on TTY1
+      services.getty.autologinUser = "root";
 
-              if [ -d "/mnt/usb/my-nixos-config-main" ]; then
-                cd /mnt/usb/my-nixos-config-main
-                bash install.sh
-              else
-                echo "Error: Repository folder 'my-nixos-config-main' not found on USB!"
-                bash
-              fi
-            '';
-          };
-        })
+      # Embed your nixos-config repository directly into the ISO build
+      environment.etc."nixos-config".source = ./.;
+
+      environment.systemPackages = with pkgs; [
+        disko
+        git
+        util-linux
+        gawk
+        gnugrep
+        parted
       ];
-    }).config.system.build.isoImage;
+
+      # Auto-run installer from the embedded repository on boot
+      programs.bash.loginShellInit = ''
+        if [ "$(tty)" = "/dev/tty1" ]; then
+          clear
+          echo "===================================================="
+          echo "      NixOS Guided Installer (Embedded Repo)       "
+          echo "===================================================="
+
+          if [ -d "/etc/nixos-config" ]; then
+            cd /etc/nixos-config
+            bash install.sh
+          fi
+        fi
+      '';
+    })
+  ];
+}).config.system.build.isoImage;
   };
 }
