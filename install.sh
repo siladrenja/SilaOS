@@ -5,6 +5,14 @@ echo "=============================================="
 echo "       Guided NixOS Host Installer           "
 echo "=============================================="
 
+# 0. Initialize a temporary Git repo so Flakes sees all files cleanly
+if [ ! -d ".git" ]; then
+    git init >/dev/null 2>&1 || true
+    git config user.name "NixOS Installer" >/dev/null 2>&1 || true
+    git config user.email "installer@nixos.local" >/dev/null 2>&1 || true
+    git add . >/dev/null 2>&1 || true
+fi
+
 # 1. Detect hosts from repository
 echo ""
 echo "Available hosts in repository:"
@@ -44,19 +52,35 @@ if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
     exit 0
 fi
 
-# 3. Partition and format drive
+# 3. Partition and format drive using pre-installed Disko binary
 echo "==> Partitioning drive with Disko..."
-nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko "$HOST_DIR/disko.nix"
+if command -v disko &>/dev/null; then
+    disko --mode disko "$HOST_DIR/disko.nix"
+else
+    nix --experimental-features 'nix-command flakes' run github:nix-community/disko -- --mode disko "$HOST_DIR/disko.nix"
+fi
 
 # 4. Generate hardware configuration
 echo "==> Generating hardware configuration..."
 nixos-generate-config --no-filesystems --root /mnt
 cp /mnt/etc/nixos/hardware-configuration.nix "$HOST_DIR/hardware-configuration.nix"
 
-# 5. Lock flake inputs & install system
-echo "==> Locking inputs & installing NixOS for host '$HOSTNAME'..."
-nix flake lock
-nixos-install --flake .#"$HOSTNAME"
+# Stage hardware-configuration.nix so git/flakes registers the new file
+git add "$HOST_DIR/hardware-configuration.nix" >/dev/null 2>&1 || true
+
+# 5. Copy full repository to target drive /mnt/etc/nixos
+echo "==> Copying NixOS repository to /etc/nixos..."
+mkdir -p /mnt/etc/nixos
+cp -a ./. /mnt/etc/nixos/
+
+# Initialize Git in /mnt/etc/nixos so git pull / rebuild alias works post-reboot
+cd /mnt/etc/nixos
+git init >/dev/null 2>&1 || true
+git add . >/dev/null 2>&1 || true
+
+# 6. Install system using explicit 'path:' flake reference
+echo "==> Installing NixOS for host '$HOSTNAME'..."
+nixos-install --flake "path:/mnt/etc/nixos#$HOSTNAME"
 
 echo ""
 echo "=============================================="
