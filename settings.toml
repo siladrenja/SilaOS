@@ -1,0 +1,66 @@
+[user]
+username = "matej"
+home_dir = "/home/matej"
+
+[theme]
+wallpaper_path = "https://unsplash.com/photos/KpBAYMNf9Tw/download?force=true&w=2400"
+wallpaper_hash = "sha256-v/gCq61Y2h6U68pTFtE9NpcXUkesDYEGidXN/PSQyf8="
+cursor_theme = "Breeze_Hacked"
+cursor_size = 18
+gtk_theme = "Flat-Remix-GTK-Cyan-Darkest"
+icon_theme = "Sweet-Purple"
+wireframe_color = "ff3333"
+
+[terminal]
+font_family = "Iosevka Nerd Font"
+font_size = 12
+opacity = 0.9
+
+[browser]
+default_page = "www.google.com"
+
+[apps]
+browser = { cmd = "firefox", name = "Web Browser", pkg = "disabled" }
+editor = { cmd = "micro", name = "Text Editor", terminal = true }
+explorer = { cmd = "thunar", pkg = "disabled", name = "File Explorer" }
+tasks = { cmd = "btop", name = "Task Manager", terminal = true }
+terminal = { cmd = "ghostty", name = "Terminal" }
+image_viewer = { cmd = "imv" }
+pdf_viewer = { cmd = "@browser", pkg = "disabled" }
+media_player = { cmd = "mpv" }
+pager = { cmd = "cat", pkg = "disabled" }
+fetch = { cmd = "fastfetch" }
+
+[colors]
+background = "000000"
+background_alt = "181926"
+text = "ffffff"
+text_dim = "cccccc"
+primary = "33ccff"
+urgent = "ff3333"
+
+[window_manager]
+border_size = 1
+active_opacity = 1.0
+inactive_opacity = 0.9
+
+[[monitors]]
+port = 0
+width = 1920
+height = 1080
+refresh = 120
+scale = 1
+
+[[monitors]]
+port = 1
+width = 1920
+height = 1080
+refresh = 60
+scale = 1
+
+[[monitors]]
+port = 2
+width = 1920
+height = 1200
+refresh = 60
+scale = 1
