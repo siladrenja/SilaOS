@@ -50,15 +50,15 @@
   in {
     nixosConfigurations = nixpkgs.lib.genAttrs hostNames mkHost;
 
-    packages.${system}.iso = (nixpkgs.lib.nixosSystem {
+ packages.${system}.iso = (nixpkgs.lib.nixosSystem {
   inherit system;
   modules = [
     "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-    ({ config, pkgs, ... }: {
+    ({ config, pkgs, lib, ... }: {
       nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-      # Log in as root automatically on TTY1
-      services.getty.autologinUser = "root";
+      # Override default 'nixos' autologin user using lib.mkForce
+      services.getty.autologinUser = lib.mkForce "root";
 
       # Embed your nixos-config repository directly into the ISO build
       environment.etc."nixos-config".source = ./.;
@@ -81,7 +81,10 @@
           echo "===================================================="
 
           if [ -d "/etc/nixos-config" ]; then
-            cd /etc/nixos-config
+            # Copy embedded repo to writable RAM directory so hardware-config & locks can be written
+            rm -rf /tmp/nixos-config
+            cp -r /etc/nixos-config /tmp/nixos-config
+            cd /tmp/nixos-config
             bash install.sh
           fi
         fi
